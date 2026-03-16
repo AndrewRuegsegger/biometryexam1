@@ -1,0 +1,70 @@
+## Some inequality of variance is tolerated by ANOVA when sample sizes are balanced and n is not small. 
+
+set.seed(1)
+
+sims <- 1000
+
+red <- as.data.frame(matrix(NA,ncol=sims,nrow=50))
+orange <- as.data.frame(matrix(NA,ncol=sims,nrow=50))
+blue <- as.data.frame(matrix(NA,ncol=sims,nrow=50))
+green <- as.data.frame(matrix(NA,ncol=sims,nrow=50))
+black <- as.data.frame(matrix(NA,ncol=sims,nrow=50))
+
+for(i in 1:50){
+  for(j in 1:sims){
+    red[i,j] <- rnorm(1,1,3)
+  }}
+for(i in 1:50){
+  for(j in 1:sims){
+    orange[i,j] <- rnorm(1,1,3)
+  }}
+for(i in 1:50){
+  for(j in 1:sims){
+    blue[i,j] <- rnorm(1,1,3)
+  }}
+for(i in 1:50){
+  for(j in 1:sims){
+    green[i,j] <- rnorm(1,1,3)
+  }}
+for(i in 1:50){
+  for(j in 1:sims){
+    black[i,j] <- rnorm(1,1,4)
+  }}
+
+ured <- colMeans(red[1:10,])
+uorange <- colMeans(orange[11:20,])
+ublue <- colMeans(blue[21:30,])
+ugreen <- colMeans(green[31:40,])
+ublack <- colMeans(black[41:50,])
+
+ured1 <- colMeans(red)
+uorange1 <- colMeans(orange)
+ublue1 <- colMeans(blue)
+ugreen1 <- colMeans(green)
+ublack1 <- colMeans(black)
+
+ss1 <- ((10)*(ured1-ured)^2)
+ss2 <- ((10)*(uorange1-uorange)^2)
+ss3 <- ((10)*(ublue1-ublue)^2)
+ss4 <- ((10)*(ugreen1-ugreen)^2)
+ss5 <- ((10)*(ublack1-ublack)^2)
+
+ssbetween <- colSums(rbind(ss1, ss2, ss3, ss4, ss5))
+msbetween <- ssbetween/4
+
+y <- matrix(NA, nrow=50, ncol=sims)
+
+for(j in 1:sims){
+  y[,j] <- (red[,j]-ured[j])^2
+}
+
+sstotal <- colSums(y)
+ssresidual <- sstotal - ssbetween
+msresidual <- ssresidual/45
+f <- msbetween/msresidual
+fcrit <- qf(0.95, 2, 45)
+signif <- f>fcrit
+
+length(which(signif)) # the number of TRUE
+
+12/1000 #Type I error
