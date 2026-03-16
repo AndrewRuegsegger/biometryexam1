@@ -1,0 +1,31 @@
+library(dplyr)
+
+cray <- read.csv("C:\\Users\\Andrew\\OneDrive\\Documents\\BIOL 57774\\Exam\\biom exam 2022 cray survival.csv")
+
+craynat <- cray %>%
+  filter(Species == "F eup")
+
+sd_wet <- sd(craynat$Survival[craynat$Treatment == "Wet"])
+sd_dry <- sd(craynat$Survival[craynat$Treatment == "Dry"])
+pooled_sd <- sqrt((sd_wet^2 + sd_dry^2) / 2)
+
+craynat_test <- power.t.test(n = NULL,
+                         delta = 4,
+                         sd = pooled_sd, 
+                         sig.level = 0.05,
+                         power = 0.8)
+craynat_test # n = 413.03, sd = 20.49 # More variance = more samples necessary.
+
+crayinv <- cray %>%
+  filter(Species == "F neg")
+
+sd_wet <- sd(crayinv$Survival[crayinv$Treatment == "Wet"])
+sd_dry <- sd(crayinv$Survival[crayinv$Treatment == "Dry"])
+pooled_sd <- sqrt((sd_wet^2 + sd_dry^2) / 2)
+
+crayinv_test <- power.t.test(n = NULL,
+                             delta = 4,
+                             sd = pooled_sd, 
+                             sig.level = 0.05,
+                             power = 0.8)
+crayinv_test # n = 236.43, sd = 15.49 # Less variance = less samples necessary.
