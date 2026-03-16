@@ -1,0 +1,48 @@
+library(ggplot2)
+library(lawstat)
+library(ggfortify)
+library(ggthemes)
+
+fish <- read.csv("C:\\Users\\Andrew\\OneDrive\\Documents\\BIOL 57774\\Exam\\biom exam 2022 fish den area hab 02.csv")
+
+fish <- fish %>%
+  filter(STREAM == "Cave")
+
+# Checking for homoscedasticity
+
+ggplot(data=fish, aes(y=TOTDENS, color=SEASON))+
+  geom_boxplot() # Looks sort of heteroscedasatic to me, so running Levene test.
+
+levene.test(fish$TOTDENS, fish$SEASON, location="median") # p = 0.3074; variances are homogeneous.
+
+# Checking for normality
+
+ggplot(data=fish, aes(x=TOTDENS))+
+  geom_histogram() # Positively skewed.
+
+qqnorm(fish$TOTDENS)
+qqline(fish$TOTDENS, col = "red") # QQ Plot indicates non-normal distribution.
+
+shapiro.test(fish$TOTDENS) # p < 0.05; confirms non-normal distribution.
+
+# I will avoid transforming data despite evidence for non-normality, as there do not appear to be very extreme values and observations are unimodal with tails.
+
+model <- aov(data=fish, TOTDENS ~ SEASON)
+
+autoplot(model, which = 1:6, ncol = 3, label.size = 3)+
+  theme_few() # Residual plots confirm that data did not require transformation.
+
+summary(model) # p < 0.001; F is not small. 
+
+r2 <- 146.09/(146.09+26.07) # SSpredictor / SStotal = r squared
+r2 # = 0.849 = 85% of variation explained by season.
+
+TukeyHSD(model) # differences with p < 0.05: October-April, October-August, October-June (initial boxplot could have told us this).
+
+# ANOVA including habitat type, also, just to see if it explains anything or changes results.
+model1 <- aov(data=fish, TOTDENS ~ SEASON+HABITAT..1.)
+summary(model1)
+146.09/(146.09+4.63+21.45) # = 85% of variance explained by season.
+4.63/(146.09+4.63+21.45) # = 3% of variance explained by habitat type.
+
+TukeyHSD(model1) # original differences remain; no differences b/t habitat types.
