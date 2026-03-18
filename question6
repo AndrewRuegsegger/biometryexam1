@@ -1,5 +1,8 @@
 fish <- read.csv("C:\\Users\\Andrew\\OneDrive\\Documents\\BIOL 57774\\Exam\\biom exam 2022 fish den area hab 02.csv")
 
+fish <- fish %>%
+  filter(STREAM == "Cave")
+
 fish$SEASON <- as.factor(fish$SEASON)
 levels(fish$SEASON)
 
@@ -12,11 +15,11 @@ contrasts(fish$SEASON)
 summary.lm(aov(TOTDENS ~ SEASON, data=fish))
 
 # H1: TOTDENS = Aug and Oct > Apr and June
-# SEASONc1: slope = 0.64; std = 0.12; t = 5.26; p < 0.001
+# SEASONc1: slope = 2.16; std = 0.33; t = 6.56; p < 0.001
 # Positive slope = density is higher in August and October than in April and June.
 # Low p value = this relationship is significant.
 
 # H2: TOTDENS = Oct > Aug
-# SEASONc2: slope = 0.58; std = 0.17; t = 3.37; p < 0.001
+# SEASONc2: slope = 3.40; std = 0.49; t = 6.82; p < 0.001
 # Positive slope = density is higher in October than in August.
 # Low p value = this relationship is significant.
